@@ -2,6 +2,7 @@
 
 ## Project Structure
 
+```
 proof_of_service/
 ├── files/
 │   ├── raw_cases/          # Original PDF cases
@@ -12,23 +13,28 @@ proof_of_service/
 ├── .gitignore
 ├── requirements.txt
 └── README.md
+```
 
 ## Pipeline
 
-1. PDF Parsing — Azure Document Intelligence converts raw PDFs into structured Markdown
-2. Data Extraction — LangGraph runs parallel LLM queries (via structured output) to extract fields like proof of service type and attorney fees
-3. Storage — Extracted data is inserted into a Supabase table
+1. **PDF Parsing** — Azure Document Intelligence converts raw PDFs into structured Markdown
+2. **Data Extraction** — LangGraph runs parallel LLM queries (via structured output) to extract fields like proof of service type and attorney fees
+3. **Storage** — Extracted data is inserted into a Supabase table
 
 ## Setup
 
+```bash
 pip install -r requirements.txt
+```
 
-Create a .env file at the root:
+Create a `.env` file at the root:
 
+```
 AZURE_ENDPOINT=your-azure-endpoint
 AZURE_KEY=your-azure-key
 OPENAI_API_KEY=your-openai-key
 SUPABASE_URL=https://xxxxx.supabase.co
 SUPABASE_KEY=your-supabase-key
+```
 
-Then run code/pipeline.ipynb.
+Then run `code/pipeline.ipynb`.
