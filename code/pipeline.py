@@ -207,11 +207,16 @@ def build_graph(md_content: str):
             "question": (
                 "Answer the following:\n"
                 "1. Is this document (or does it contain) an 'Application for Service by Posting'?\n"
-                "2. If yes: what date was the application filed? (MM/DD/YYYY)\n"
-                "3. If yes: what date was the application granted? (MM/DD/YYYY)\n"
-                "4. If yes: what is the name of the judge?\n"
-                "5. If yes: what division or department is the judge in?\n"
-                "6. Is this document (or does it contain) a proof of service?"
+                "2. If yes: what date was the application filed with the court? Look for the "
+                "court's 'FILED' stamp (not the date the declarant signed). (MM/DD/YYYY)\n"
+                "3. If yes: what date was the application granted? This is the date on the "
+                "court's order, near the judge's signature. (MM/DD/YYYY)\n"
+                "4. If yes: what is the name of the judge? Look near the judicial officer "
+                "signature at the bottom of the order section.\n"
+                "5. If yes: what division or department NUMBER is the judge in? Return the "
+                "actual number or code (e.g., 'F44', 'A9'), NOT the label 'DIV. / DEPT.'\n"
+                "6. Is this document (or does it contain) a proof of service (POS-010 form "
+                "documenting completed service)? An application for posting is NOT a proof of service."
             ),
         })
         print(f"  ⏱ ask_application_info: {time.perf_counter() - t0:.2f}s")
@@ -261,6 +266,9 @@ def build_graph(md_content: str):
                 "'posted on the door', or similar.\n\n"
                 "Do NOT extract defendants who are merely listed in the case caption, "
                 "complaint header, or in a request/application but were not actually served.\n\n"
+                "IMPORTANT: A court order stating defendants 'may be served by posting' "
+                "is granting PERMISSION for future service — it does NOT mean service "
+                "has been completed. Do not extract defendants from such orders.\n\n"
                 "Scan the ENTIRE document from start to finish — there may be MULTIPLE "
                 "proof of service sections, one per defendant. Each defendant may appear "
                 "on a separate page. Count ALL of them.\n\n"
@@ -309,10 +317,16 @@ def build_graph(md_content: str):
             "document": md_content,
             "question": (
                 "Does this document contain a 'Declaration of Diligence' or any record "
-                "of prior/failed service attempts?\n"
-                "If yes, how many, and for each: date (MM/DD/YYYY), time (HH:MM am/pm), "
+                "of PRIOR FAILED attempts to serve the defendant?\n\n"
+                "These are attempts that did NOT result in successful service — e.g., "
+                "'knocked on the door, no one answered', 'no one home', etc. They are "
+                "typically listed in a Declaration of Diligence section.\n\n"
+                "Do NOT count the actual successful service event (where documents were "
+                "delivered or left with someone) as an attempt. That is the completed "
+                "service, not a prior attempt.\n\n"
+                "For each prior failed attempt: date (MM/DD/YYYY), time (HH:MM am/pm), "
                 "and description.\n"
-                "If none, return 0 and an empty list."
+                "If no prior attempts are documented, return 0 and an empty list."
             ),
         })
         print(f"  ⏱ ask_service_attempts: {time.perf_counter() - t0:.2f}s")
